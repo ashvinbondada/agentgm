@@ -113,29 +113,29 @@ export const agentChatStyles = `
 		min-height: 0;
 		max-height: 100%;
 	}
-	.agent-messages-avatar {
+	.agent-chat-avatar {
 		align-self: flex-end;
 		margin-bottom: 2px;
 	}
-	.agent-messages-bubble {
+	.agent-chat-bubble {
 		max-width: 85%;
 		padding: 0.5rem 0.75rem;
 		border-radius: 1rem;
 		word-break: break-word;
 	}
-	.agent-messages-bubble-user {
+	.agent-chat-bubble-user {
 		background: var(--bs-primary, #0d6efd);
 		color: #fff;
 		border-bottom-right-radius: 0.25rem;
 	}
-	.agent-messages-bubble-user a {
+	.agent-chat-bubble-user a {
 		color: #cfe2ff;
 	}
-	.agent-messages-bubble-assistant {
+	.agent-chat-bubble-assistant {
 		background: var(--bs-secondary-bg, rgba(0, 0, 0, 0.06));
 		border-bottom-left-radius: 0.25rem;
 	}
-	.agent-messages-msg.role-user .agent-messages-text {
+	.agent-chat-msg.role-user .agent-messages-text {
 		white-space: pre-wrap;
 	}
 	.agent-messages-md {
@@ -225,7 +225,7 @@ export const agentChatStyles = `
 	}
 
 	/* Typing indicator */
-	.agent-messages-typing {
+	.agent-chat-typing {
 		padding: 4px 0;
 		animation: agent-messages-pulse 1.5s ease-in-out infinite;
 	}
