@@ -85,14 +85,9 @@ export const hasVisibleText = (message: UIMessage) =>
 	) ?? false;
 
 export const getActiveToolLabel = (message: UIMessage): string | null => {
-	if (!message.parts) {
-		return null;
-	}
+	if (!message.parts) return null;
 	for (let i = message.parts.length - 1; i >= 0; i--) {
 		const part = message.parts[i];
-		if (!part) {
-			continue;
-		}
 		if (part.type.startsWith("tool-")) {
 			const state = "state" in part ? part.state : undefined;
 			if (state !== "output-available" && state !== "output-error") {
@@ -113,12 +108,11 @@ export const renderMessageParts = (
 	}
 
 	const useMarkdown = message.role === "assistant";
-	const lastTextIndex = message.parts.findLastIndex((p) => p.type === "text");
+	const lastTextIndex = message.parts.findLastIndex(
+		(p) => p.type === "text",
+	);
 
 	return message.parts.map((part, index) => {
-		if (!part) {
-			return null;
-		}
 		if (part.type === "text") {
 			const isActivelyStreaming =
 				isStreaming &&
@@ -131,7 +125,7 @@ export const renderMessageParts = (
 				return (
 					<div
 						key={index}
-						className={`agent-chat-text agent-chat-md${isActivelyStreaming ? " agent-chat-streaming" : ""}`}
+						className={`agent-messages-text agent-messages-md${isActivelyStreaming ? " agent-messages-streaming" : ""}`}
 					>
 						<ReactMarkdown
 							remarkPlugins={[remarkGfm]}
@@ -141,25 +135,24 @@ export const renderMessageParts = (
 							{part.text}
 						</ReactMarkdown>
 						{isActivelyStreaming ? (
-							<span className="agent-chat-cursor" />
+							<span className="agent-messages-cursor" />
 						) : null}
 					</div>
 				);
 			}
 
 			return (
-				<div key={index} className="agent-chat-text">
+				<div key={index} className="agent-messages-text">
 					{part.text}
 				</div>
 			);
 		}
 
 		if (part.type.startsWith("tool-")) {
-			if (options?.hideToolParts) {
-				return null;
-			}
+			if (options?.hideToolParts) return null;
 			const label = toolPartLabel(part.type);
-			const state = "state" in part ? toolStateMessage(part.state) : undefined;
+			const state =
+				"state" in part ? toolStateMessage(part.state) : undefined;
 			return (
 				<div key={index} className="text-muted small py-1">
 					{state && state !== "Done" ? (

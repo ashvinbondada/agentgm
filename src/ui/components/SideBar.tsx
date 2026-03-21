@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import {
+	type CSSProperties,
 	memo,
 	type ReactNode,
 	useCallback,
@@ -35,6 +36,20 @@ export const getText = (
 	return text;
 };
 
+const agentSectionBorder: CSSProperties = {
+	padding: "2px",
+	borderRadius: "14px",
+	background:
+		"conic-gradient(from 180deg, #4285f4, #34a853, #fbbc04, #ea4335, #9b72cb, #4285f4)",
+	margin: "6px 8px",
+};
+
+const agentSectionInner: CSSProperties = {
+	borderRadius: "12px",
+	background: "#f8f9fa",
+	overflow: "hidden",
+};
+
 const MenuGroup = ({
 	children,
 	title,
@@ -43,8 +58,9 @@ const MenuGroup = ({
 	title?: string;
 }) => {
 	const [open, setOpen] = useState(true);
+	const isAgent = title === "Agent";
 
-	return (
+	const content = (
 		<>
 			{title ? (
 				<a
@@ -54,7 +70,8 @@ const MenuGroup = ({
 						setOpen((prev) => !prev);
 					}}
 				>
-					<CollapseArrow open={open} /> {title}
+					<CollapseArrow open={open} />{" "}
+					{title}
 				</a>
 			) : null}
 			<AnimatePresence initial={false}>
@@ -79,6 +96,16 @@ const MenuGroup = ({
 			</AnimatePresence>
 		</>
 	);
+
+	if (isAgent) {
+		return (
+			<div style={agentSectionBorder}>
+				<div style={agentSectionInner}>{content}</div>
+			</div>
+		);
+	}
+
+	return content;
 };
 
 export const makeAnchorProps = (

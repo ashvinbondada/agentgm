@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { memo, useCallback, useState } from "react";
-import type { MouseEvent, ReactNode } from "react";
+import type { CSSProperties, MouseEvent, ReactNode } from "react";
 import { Dropdown, Nav } from "react-bootstrap";
 import { helpers } from "../util/index.ts";
 import type {
@@ -8,6 +8,23 @@ import type {
 	MenuItemHeader,
 	MenuItemText,
 } from "../../common/types.ts";
+
+const agentPillOuter: CSSProperties = {
+	display: "inline-flex",
+	padding: "1.5px",
+	borderRadius: "100px",
+	background:
+		"conic-gradient(from 180deg, #4285f4, #34a853, #fbbc04, #ea4335, #9b72cb, #4285f4)",
+};
+
+const agentPillInner: CSSProperties = {
+	display: "inline-flex",
+	alignItems: "center",
+	gap: "4px",
+	padding: "1px 10px",
+	borderRadius: "100px",
+	background: "#f8f9fa",
+};
 
 type TopMenuToggleProps = {
 	long: string;
@@ -25,16 +42,34 @@ const TopMenuToggle = ({ long, openID, short, toggle }: TopMenuToggleProps) => {
 		},
 		[long, openID, toggle],
 	);
+
+	const isAgent = long === "Agent";
+
 	return (
 		<Dropdown.Toggle
 			as={Nav.Link}
 			id="whatever"
 			onMouseEnter={handleMouseEnter}
+			className={isAgent ? "agent-pill-toggle" : undefined}
 		>
-			<span className="d-none d-md-inline">{long}</span>
-			<span className="d-md-none" title={long}>
-				{short}
-			</span>
+			{isAgent ? (
+				<span style={agentPillOuter}>
+					<span style={agentPillInner}>
+						<span className="d-none d-md-inline">{long}</span>
+						<span className="d-md-none" title={long}>
+							{short}
+						</span>
+						<span className="agent-pill-caret" />
+					</span>
+				</span>
+			) : (
+				<>
+					<span className="d-none d-md-inline">{long}</span>
+					<span className="d-md-none" title={long}>
+						{short}
+					</span>
+				</>
+			)}
 		</Dropdown.Toggle>
 	);
 };
