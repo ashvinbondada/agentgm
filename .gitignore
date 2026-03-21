@@ -2,8 +2,8 @@
 node_modules/
 .DS_Store
 
-# Client (Twitter Clone UI) build outputs
-client/.next/
-client/node_modules/
-client/dist/
-client/out/
+# Twitter Clone UI build outputs
+Twitter-Clone/.next/
+Twitter-Clone/node_modules/
+Twitter-Clone/dist/
+Twitter-Clone/out/
