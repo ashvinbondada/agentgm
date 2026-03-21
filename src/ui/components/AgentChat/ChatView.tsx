@@ -7,6 +7,7 @@ import {
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import type { AgentChatToolName } from "../../../common/agentChatTools.ts";
 import type { GmChatToolName } from "../../../common/gmChatTools.ts";
+import type { PlayerChatToolName } from "../../../common/playerChatTools.ts";
 import {
 	serializeAgentGameState,
 	type AgentGameContext,
@@ -28,6 +29,11 @@ import {
 	runGmGetMyRoster,
 	runGmGetUserTeamRoster,
 } from "../../util/gmAgentTools.ts";
+import {
+	runPlayerGetMyStats,
+	runPlayerGetMyContract,
+	runPlayerGetTeamStandings,
+} from "../../util/playerAgentTools.ts";
 import {
 	useAgentChatUi,
 	type Conversation,
@@ -77,20 +83,26 @@ export default function ChatView({
 	gameContextRef.current = serializeAgentGameState(local);
 
 	const isGm = conversation.type === "gm";
+	const isPlayer = conversation.type === "player";
 	const entityContext = conversation.entityContext;
+	const playerEntityContext = conversation.playerEntityContext;
 
 	const transport = useMemo(
 		() =>
 			new DefaultChatTransport<UIMessage>({
 				api: "/api/chat",
-				body: () => {
-					const gameContext = gameContextRef.current;
-					return isGm
-						? { gameContext, entityContext }
-						: { gameContext };
-				},
-			}),
-		[isGm, entityContext],
+			body: () => {
+				const gameContext = gameContextRef.current;
+				if (isGm) {
+					return { gameContext, entityContext };
+				}
+				if (isPlayer) {
+					return { gameContext, playerEntityContext };
+				}
+				return { gameContext };
+			},
+		}),
+	[isGm, isPlayer, entityContext, playerEntityContext],
 	);
 
 	const addToolOutputRef = useRef<
@@ -172,7 +184,36 @@ export default function ChatView({
 				}
 			}
 
-			const name = toolCall.toolName as AgentChatToolName;
+		if (isPlayer && playerEntityContext) {
+			const playerName =
+				toolCall.toolName as PlayerChatToolName;
+			switch (playerName) {
+				case "getMyStats":
+					await reply(
+						await runPlayerGetMyStats(
+							playerEntityContext,
+							ctx,
+						),
+					);
+					return;
+				case "getMyContract":
+					await reply(
+						await runPlayerGetMyContract(
+							playerEntityContext,
+						),
+					);
+					return;
+				case "getTeamStandings":
+					await reply(
+						await runPlayerGetTeamStandings(ctx),
+					);
+					return;
+				default:
+					return;
+			}
+		}
+
+		const name = toolCall.toolName as AgentChatToolName;
 			switch (name) {
 				case "getStandings": {
 					const input = toolCall.input as { season?: number };
@@ -309,10 +350,12 @@ export default function ChatView({
 		form.reset();
 	};
 
-	const headerName = isGm ? conversation.name : "My Staff";
-	const placeholder = isGm
-		? `Message ${conversation.name}...`
-		: "Ask about your team...";
+	const headerName =
+		isGm || isPlayer ? conversation.name : "My Staff";
+	const placeholder =
+		isGm || isPlayer
+			? `Message ${conversation.name}...`
+			: "Ask about your team...";
 
 	const gmTeamInfo =
 		isGm && entityContext

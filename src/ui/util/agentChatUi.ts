@@ -12,13 +12,29 @@ export type EntityContext = {
 	lost: number;
 };
 
+export type PlayerEntityContext = {
+	pid: number;
+	firstName: string;
+	lastName: string;
+	tid: number;
+	abbrev: string;
+	pos: string;
+	ovr: number;
+	age: number;
+	injury: { type: string; gamesRemaining: number } | null;
+	contractAmount: number;
+	contractExp: number;
+	mood: "happy" | "neutral" | "unhappy";
+};
+
 export type Conversation = {
 	id: string;
-	type: "general" | "gm";
+	type: "general" | "gm" | "player";
 	name: string;
 	lastMessage: string;
 	updatedAt: number;
 	entityContext?: EntityContext;
+	playerEntityContext?: PlayerEntityContext;
 };
 
 export type DmView = "inbox" | "chat" | "newDm";

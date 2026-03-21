@@ -8,7 +8,9 @@ import {
 import { google, type GoogleLanguageModelOptions } from "@ai-sdk/google";
 import { agentChatTools } from "../src/common/agentChatTools.ts";
 import { gmChatTools } from "../src/common/gmChatTools.ts";
+import { playerChatTools } from "../src/common/playerChatTools.ts";
 import { buildGmSystemPrompt } from "../src/ui/util/gmSystemPrompt.ts";
+import { buildPlayerSystemPrompt } from "../src/ui/util/playerSystemPrompt.ts";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
 	if (req.method !== "POST") {
@@ -23,17 +25,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 					messages: UIMessage[];
 					gameContext?: unknown;
 					entityContext?: unknown;
+					playerEntityContext?: unknown;
 				})
 			: (rawBody as {
 					messages: UIMessage[];
 					gameContext?: unknown;
 					entityContext?: unknown;
+					playerEntityContext?: unknown;
 				});
 
-	const { messages, gameContext, entityContext } = body;
+	const { messages, gameContext, entityContext, playerEntityContext } = body;
 
 	console.log("[api/chat] gameContext", gameContext);
 	console.log("[api/chat] entityContext", entityContext);
+	console.log("[api/chat] playerEntityContext", playerEntityContext);
 
 	if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
 		res.status(500).json({
@@ -47,6 +52,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 		entityContext != null &&
 		typeof entityContext === "object" &&
 		"tid" in entityContext;
+
+	const isPlayerChat =
+		playerEntityContext != null &&
+		typeof playerEntityContext === "object" &&
+		"pid" in playerEntityContext;
 
 	let result;
 
@@ -79,6 +89,47 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 			system,
 			messages: await convertToModelMessages(messages),
 			tools: gmChatTools,
+			stopWhen: stepCountIs(15),
+			providerOptions: {
+				google: {
+					thinkingConfig: { thinkingLevel: "low" },
+				} satisfies GoogleLanguageModelOptions,
+			},
+		});
+	} else if (isPlayerChat) {
+		const pc = playerEntityContext as {
+			pid: number;
+			firstName: string;
+			lastName: string;
+			tid: number;
+			abbrev: string;
+			pos: string;
+			ovr: number;
+			age: number;
+			injury: { type: string; gamesRemaining: number } | null;
+			contractAmount: number;
+			contractExp: number;
+			mood: "happy" | "neutral" | "unhappy";
+		};
+		const gc = gameContext as {
+			phase: number;
+			phaseText: string;
+			season: number;
+			userTid: number;
+			userTids: number[];
+			spectator: boolean;
+			userTeamAbbrev: string | null;
+			userTeamName: string | null;
+			statusText: string;
+			teamsIndex: { tid: number; abbrev: string }[];
+		};
+		const system = buildPlayerSystemPrompt(pc, gc);
+
+		result = streamText({
+			model: google("gemini-3-flash-preview"),
+			system,
+			messages: await convertToModelMessages(messages),
+			tools: playerChatTools,
 			stopWhen: stepCountIs(15),
 			providerOptions: {
 				google: {
