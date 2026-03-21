@@ -73,10 +73,12 @@ const styles = {
 };
 
 const getScoreColor = (score?: number) => {
-	if (!score)
+	if (!score) {
 		return { bg: "var(--bs-tertiary-bg)", color: "var(--bs-secondary-color)" };
-	if (score >= 20)
+	}
+	if (score >= 20) {
 		return { bg: "rgba(211, 84, 0, 0.15)", color: "var(--bs-primary)" };
+	}
 	return { bg: "rgba(41, 128, 185, 0.15)", color: "#3498db" };
 };
 

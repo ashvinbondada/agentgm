@@ -160,7 +160,15 @@ const SocialFeedApp = ({
 							(e.currentTarget as HTMLButtonElement).style.backgroundColor =
 								"var(--bs-tertiary-bg)";
 						}}
+						onFocus={(e) => {
+							(e.currentTarget as HTMLButtonElement).style.backgroundColor =
+								"var(--bs-tertiary-bg)";
+						}}
 						onMouseOut={(e) => {
+							(e.currentTarget as HTMLButtonElement).style.backgroundColor =
+								"transparent";
+						}}
+						onBlur={(e) => {
 							(e.currentTarget as HTMLButtonElement).style.backgroundColor =
 								"transparent";
 						}}

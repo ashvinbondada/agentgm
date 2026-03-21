@@ -179,7 +179,9 @@ const TrendingSidebar = ({ events, teams, userTid }: TrendingSidebarProps) => {
 					{activeTeams.map(([tidStr, count]) => {
 						const tid = Number(tidStr);
 						const team = teams[tid];
-						if (!team) return null;
+						if (!team) {
+							return null;
+						}
 						const isUser = tid === userTid;
 						return (
 							<div key={tid} style={styles.teamRow}>
