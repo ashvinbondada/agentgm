@@ -1,5 +1,5 @@
 import toUI from "./toUI.ts";
-import { getFeedWorker } from "./feedWorkerInstance.ts";
+import { processFeedEvent } from "./processFeedEvent.ts";
 import type {
 	FeedEvent,
 	FeedEventType,
@@ -18,16 +18,8 @@ export function emitFeedEvent(
 		...(eventMetadata !== undefined ? { eventMetadata } : {}),
 	};
 
-	// Forward the event to the Feed Worker for processing (API call + IDB write).
-	const worker = getFeedWorker();
-	if (worker !== null) {
-		worker.postMessage(event);
-	} else {
-		console.warn(
-			"[emitFeedEvent] Feed Worker not yet initialized; event dropped:",
-			type,
-		);
-	}
+	// Process the event inline in the game worker (fire-and-forget).
+	processFeedEvent(event);
 
 	// Notify the UI thread so the SocialFeedPanel re-reads IDB.
 	toUI("feedEvent", [event]);
