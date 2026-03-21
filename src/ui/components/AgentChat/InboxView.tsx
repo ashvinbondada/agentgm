@@ -2,7 +2,9 @@ import { useMemo } from "react";
 import { useAgentChatUi } from "../../util/agentChatUi.ts";
 
 function preview(text: string, max = 40): string {
-	if (text.length <= max) return text;
+	if (text.length <= max) {
+		return text;
+	}
 	return `${text.slice(0, max)}…`;
 }
 

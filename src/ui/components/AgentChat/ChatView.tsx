@@ -232,7 +232,7 @@ export default function ChatView({
 	useEffect(() => {
 		if (chatMessages.length > 0) {
 			setMessages(conversation.id, chatMessages);
-			const last = chatMessages[chatMessages.length - 1];
+			const last = chatMessages.at(-1);
 			if (last) {
 				const textPart = last.parts?.find((p) => p.type === "text");
 				const preview =
