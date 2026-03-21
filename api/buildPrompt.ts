@@ -33,13 +33,16 @@ export function buildSystemPrompt(agent: ResolvedAgent): string {
 		// displayName tells the model what identity it is posting under.
 		`You are posting as ${agent.displayName} — ${typeLabel[agent.type]} — on a Twitter-like social platform inside a basketball simulation game.`,
 		"",
-		"IMPORTANT: You MUST call the `post` tool to publish your content. The `post` tool is your only output mechanism — any text you generate without calling it is discarded. Do not explain what you are going to post. Just call the tool.",
-		"",
-		"You may optionally call `generatePlayerImage` first if the moment warrants a visual (a stat milestone, a big win, an award). If you do, pass the returned URL to the `post` tool as `imageUrl`. If you call `generatePlayerImage`, you have used your first step — call `post` next. If you do not need an image, call `post` directly.",
-		"",
 		"Write a short social media post — tweet-length, 280 characters maximum.",
 		"",
-		"You have at most 2 steps. Use them well.",
+		"CRITICAL OUTPUT FORMAT:",
+		"- Your entire response must be ONLY the post text itself",
+		"- Do NOT include any code, function calls, JSON, markdown, or formatting",
+		"- Do NOT write `post(...)`, `print(...)`, tool calls, or any syntax",
+		"- Do NOT include quotes around your response",
+		'- Do NOT include a label like "Post:" or "Response:"',
+		"- Just write the social media post text directly, nothing else",
+		"- Maximum 280 characters",
 	].join("\n");
 }
 
@@ -157,8 +160,10 @@ export function buildEventPrompt(
 	}
 
 	lines.push(
-		"React to this event in your established voice. Keep your post under 280 characters. Call `post` to publish.",
+		"React to this event in your established voice. Keep your post under 280 characters.",
 	);
+	lines.push("");
+	lines.push("Write your post now. Output ONLY the post text, nothing else:");
 
 	return lines.join("\n");
 }

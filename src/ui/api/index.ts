@@ -18,33 +18,7 @@ import type {
 	GameAttributesLeague,
 } from "../../common/types.ts";
 import { crossTabEmitter } from "../util/crossTabEmitter.ts";
-import type {
-	AgentConfig,
-	FeedEvent,
-	GeneratedPost,
-	ResolvedAgent,
-} from "../../common/types.feedEvent.ts";
-import { getAllAccounts, addPost } from "../../worker/util/feedDb.ts";
 import { feedEventHandler } from "../util/feedEventHandler.ts";
-
-// Phase 2 agent config JSONs — one import per file, keyed by templateId.
-import shamCharaniaJson from "../../data/socialAgents/journalists/sham_charania.json";
-import fanHomerJson from "../../data/socialAgents/fans/homer.json";
-import fanCasualJson from "../../data/socialAgents/fans/bandwagon.json";
-import fanHaterJson from "../../data/socialAgents/fans/hater.json";
-import fanStatNerdJson from "../../data/socialAgents/fans/stat_nerd.json";
-import orgTemplateJson from "../../data/socialAgents/orgs/template.json";
-import playerTemplateJson from "../../data/socialAgents/players/template.json";
-
-const agentConfigMap: Record<string, AgentConfig> = {
-	sham_charania: shamCharaniaJson as AgentConfig,
-	fan_homer: fanHomerJson as AgentConfig,
-	fan_casual: fanCasualJson as AgentConfig,
-	fan_hater: fanHaterJson as AgentConfig,
-	fan_stat_nerd: fanStatNerdJson as AgentConfig,
-	org_template: orgTemplateJson as AgentConfig,
-	player_template: playerTemplateJson as AgentConfig,
-};
 
 const initAds = (type: "accountChecked" | "uiRendered") => {
 	ads.setLoadingDone(type);
@@ -160,58 +134,11 @@ const crossTabEmit = (
 	crossTabEmitter.emit(...parameters);
 };
 
-const feedEvent = async (event: FeedEvent): Promise<void> => {
-	// Phase 18-lite shim: temporary E2E path before the Feed Worker is built.
-	// Receives a FeedEvent from the game worker, resolves matching agents, calls
-	// the feed API, and persists the returned posts to socialFeedDb.
-
-	const accounts = await getAllAccounts();
-
-	const resolvedAgents: ResolvedAgent[] = [];
-	for (const account of accounts) {
-		if (account.status !== "active") continue;
-		const config = agentConfigMap[account.templateId];
-		if (!config) continue;
-		if (!config.triggers.includes(event.type)) continue;
-		const resolved: ResolvedAgent = {
-			...config,
-			agentId: account.agentId,
-			displayName: account.displayName,
-		};
-		resolvedAgents.push(resolved);
-	}
-
-	if (resolvedAgents.length === 0) {
-		console.log(`[feedEvent] no active agents matched ${event.type}`);
-		return;
-	}
-
-	const feedApiUrl =
-		(process.env as Record<string, string | undefined>).FEED_API_URL ??
-		"/api/feed";
-
-	const response = await fetch(feedApiUrl, {
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify({ event, agents: resolvedAgents }),
-	});
-
-	if (!response.ok) {
-		console.error(
-			`[feedEvent] feed API returned ${response.status} for ${event.type}`,
-		);
-		return;
-	}
-
-	const { posts } = (await response.json()) as { posts: GeneratedPost[] };
-
-	await Promise.all(posts.map((post) => addPost(post)));
-
-	console.log(`[feedEvent] generated ${posts.length} posts for ${event.type}`);
-
-	// Phase 17: notify UI listeners so the feed panel re-reads IDB.
-	feedEventHandler(event);
-};
+// Phase 18: the Feed Worker lives in the game worker and handles all feed
+// processing (agent resolution, API call, IDB writes). The UI thread only needs
+// to relay the feedEvent notification to registered panel listeners so they
+// re-read socialFeedDb via their own IDB connection.
+const feedEvent = feedEventHandler;
 
 export default {
 	analyticsEvent,

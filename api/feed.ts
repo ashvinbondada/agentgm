@@ -8,6 +8,22 @@ import type {
 	ResolvedAgent,
 } from "../src/common/types.feedEvent.ts";
 
+function cleanPostBody(text: string): string {
+	let cleaned = text.trim();
+	// Strip tool_code JSON artifacts
+	cleaned = cleaned.replace(/\{"tool_code":[^}]*\}/g, "").trim();
+	// Strip Python-style function calls
+	cleaned = cleaned.replace(/^(Call:|print\(|post\()/i, "").trim();
+	// Strip trailing closing parens from function calls
+	cleaned = cleaned.replace(/\)\s*$/, "").trim();
+	// Extract body from post() call if present
+	const bodyMatch = cleaned.match(/body=['"](.+?)['"]/s);
+	if (bodyMatch) {
+		cleaned = bodyMatch[1];
+	}
+	return cleaned.slice(0, 280);
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
 	if (req.method !== "POST") {
 		res.status(405).end("Method Not Allowed");
@@ -44,7 +60,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 				maxTokens: 300,
 			});
 
-			const postBody = result.text.trim();
+			const postBody = cleanPostBody(result.text);
 			if (!postBody) {
 				console.log(
 					`[api/feed] Agent ${agent.agentId} returned empty text — skipping`,
@@ -52,9 +68,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 				continue;
 			}
 
-			// Truncate to 280 chars if model overruns
-			const truncated =
-				postBody.length > 280 ? postBody.slice(0, 280) : postBody;
+			// cleanPostBody already slices to 280; assign directly
+			const truncated = postBody;
 
 			const generatedPost: GeneratedPost = {
 				postId: `${agent.agentId}-${event.timestamp}-${event.type}`,

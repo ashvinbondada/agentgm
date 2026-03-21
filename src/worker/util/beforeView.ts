@@ -13,6 +13,7 @@ import {
 } from "./index.ts";
 import type { Conditions, League } from "../../common/types.ts";
 import { initializeFeedAccounts } from "./initializeAccounts.ts";
+import { initFeedWorker } from "./feedWorkerInstance.ts";
 import type {
 	TeamSummary,
 	PlayerSummary,
@@ -203,6 +204,9 @@ export const beforeLeague = async (newLid: number, conditions?: Conditions) => {
 	})().catch((err) =>
 		console.error("[feed] initializeFeedAccounts failed:", err),
 	);
+
+	// Instantiate the Feed Worker singleton (idempotent — safe on every league open).
+	initFeedWorker();
 
 	if (loadingNewLid !== newLid) {
 		return;
