@@ -28,7 +28,9 @@ export default function InboxView({
 	const openConversation = useAgentChatUi((s) => s.openConversation);
 	const openNewDm = useAgentChatUi((s) => s.openNewDm);
 
-	const { teamInfoCache } = useLocalPartial(["teamInfoCache"]);
+	const { teamInfoCache } = useLocalPartial([
+		"teamInfoCache",
+	]);
 
 	const orderRef = useRef<string[] | null>(null);
 
@@ -59,21 +61,22 @@ export default function InboxView({
 	return (
 		<div className="d-flex flex-column h-100">
 			{showHeader && (
-				<div className="agent-chat-header px-3 border-bottom d-flex align-items-center">
+				<div className="agent-messages-header px-3 border-bottom d-flex align-items-center">
 					<span className="fw-bold fs-5">Messages</span>
 				</div>
 			)}
 			<div className="list-group list-group-flush flex-grow-1 overflow-auto">
 				{sorted.map((conv) => {
-					const gmTeamInfo = conv.entityContext
-						? teamInfoCache[conv.entityContext.tid]
-						: undefined;
+					const gmTeamInfo =
+						conv.entityContext
+							? teamInfoCache[conv.entityContext.tid]
+							: undefined;
 
 					return (
 						<button
 							key={conv.id}
 							type="button"
-							className={`list-group-item list-group-item-action text-start border-0 border-bottom rounded-0${activeId === conv.id ? " agent-chat-inbox-active" : ""}`}
+							className={`list-group-item list-group-item-action text-start border-0 border-bottom rounded-0${activeId === conv.id ? " agent-messages-inbox-active" : ""}`}
 							onClick={() => openConversation(conv.id)}
 						>
 							<div className="d-flex align-items-center gap-2">
