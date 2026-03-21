@@ -7,6 +7,8 @@ import setJerseyNumber from "./setJerseyNumber.ts";
 import { emitFeedEvent } from "../../util/feedEvents.ts";
 import { getSocialContext } from "../../util/getSocialContext.ts";
 
+let lastPlayerSigningMs = 0;
+
 const sign = async (
 	p: Player,
 	tid: number,
@@ -60,6 +62,10 @@ const sign = async (
 		});
 
 		// --- PLAYER_SIGNING feed event hook (fire-and-forget) ---
+		if (Math.random() > 0.15) return; // skip most signings
+		const now = Date.now();
+		if (now - lastPlayerSigningMs < 2000) return; // cooldown
+		lastPlayerSigningMs = now;
 		const playerName = `${p.firstName} ${p.lastName}`;
 		const signingTid = p.tid;
 		void getSocialContext("PLAYER_SIGNING")

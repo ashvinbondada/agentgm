@@ -30,22 +30,32 @@ const configMap: Record<string, AgentConfig> = {
 };
 
 const FEED_API_URL: string =
-	(typeof process !== "undefined" && process.env?.FEED_API_URL) || "/api/feed";
+	(typeof process !== "undefined" && process.env?.FEED_API_URL) ||
+	(typeof self !== "undefined" && self.location?.origin
+		? `${self.location.origin}/api/feed`
+		: "/api/feed");
+console.log("[feed:init] FEED_API_URL:", FEED_API_URL);
 
 // Serial queue — one event processed at a time, no backpressure buildup.
 const queue: FeedEvent[] = [];
 let processing = false;
 
 async function handleEvent(event: FeedEvent): Promise<void> {
+	console.log("[feed:process] handleEvent start:", event.type);
 	const allAccounts = await getAllAccounts();
+	console.log("[feed:process] accounts loaded:", allAccounts.length);
 
 	const triggeredAccounts = allAccounts.filter((account) => {
 		if (account.status !== "active") return false;
 		const config = configMap[account.templateId];
 		return config !== undefined && config.triggers.includes(event.type);
 	});
+	console.log("[feed:process] triggered accounts:", triggeredAccounts.length);
 
-	if (triggeredAccounts.length === 0) return;
+	if (triggeredAccounts.length === 0) {
+		console.log("[feed:process] no triggered accounts, skipping");
+		return;
+	}
 
 	const agents: ResolvedAgent[] = triggeredAccounts.map((account) => {
 		const config = configMap[account.templateId]!;
@@ -57,11 +67,19 @@ async function handleEvent(event: FeedEvent): Promise<void> {
 		};
 	});
 
+	console.log(
+		"[feed:process] POSTing to",
+		FEED_API_URL,
+		"with",
+		agents.length,
+		"agents",
+	);
 	const response = await fetch(FEED_API_URL, {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
 		body: JSON.stringify({ event, agents }),
 	});
+	console.log("[feed:process] response status:", response.status);
 
 	if (!response.ok) {
 		throw new Error(
@@ -71,8 +89,9 @@ async function handleEvent(event: FeedEvent): Promise<void> {
 
 	const data = (await response.json()) as { posts: GeneratedPost[] };
 	const posts = data.posts ?? [];
+	console.log("[feed:process] posts received:", posts.length);
 	await Promise.all(posts.map((post) => addPost(post)));
-	console.log(`[feed] ${event.type}: saved ${posts.length} post(s)`);
+	console.log(`[feed:process] ${event.type}: saved ${posts.length} post(s)`);
 }
 
 async function processNext(): Promise<void> {
@@ -89,6 +108,12 @@ async function processNext(): Promise<void> {
 }
 
 export function processFeedEvent(event: FeedEvent): void {
+	console.log(
+		"[feed:process] enqueuing:",
+		event.type,
+		"queue length:",
+		queue.length,
+	);
 	queue.push(event);
 	if (!processing) void processNext();
 }
