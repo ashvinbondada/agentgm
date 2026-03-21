@@ -1,5 +1,5 @@
 import { idb } from "../db/index.ts";
-import { g } from "../util/index.ts";
+import g from "./g.ts";
 import type {
 	FeedEventType,
 	GameResult,
