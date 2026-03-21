@@ -1,14 +1,9 @@
-*~
-*.pyc
-*.sublime-project
-*.sublime-workspace
-/node_modules
-/npm-debug.log
-/build
-/local.log
-/stats-*.html
-/.idea/
-/foo
-/.vscode
-/tools/names-groups-html
-.vercel
+# Root-level monorepo ignores
+node_modules/
+.DS_Store
+
+# Client (Twitter Clone UI) build outputs
+client/.next/
+client/node_modules/
+client/dist/
+client/out/
