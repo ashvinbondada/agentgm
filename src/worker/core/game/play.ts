@@ -331,11 +331,16 @@ const play = async (
 				homeName: homeTeam.name,
 				awayName: awayTeam.name,
 			};
+			console.log("[feed:hook] GAME_END firing");
 			void getSocialContext("GAME_END")
-				.then((context) => emitFeedEvent("GAME_END", context, eventMetadata))
-				.catch((err) =>
-					console.error("[feedHook] failed to emit GAME_END", err),
-				);
+				.then((context) => {
+					console.log(
+						"[feed:hook] GAME_END context ready, teams:",
+						context.teams.length,
+					);
+					emitFeedEvent("GAME_END", context, eventMetadata);
+				})
+				.catch((err) => console.error("[feed:hook] GAME_END failed", err));
 		}
 		// --- end Phase 10 hooks ---
 

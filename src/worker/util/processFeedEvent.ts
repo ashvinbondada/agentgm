@@ -46,18 +46,33 @@ async function handleEvent(event: FeedEvent): Promise<void> {
 	console.log("[feed:process] accounts loaded:", allAccounts.length);
 
 	const triggeredAccounts = allAccounts.filter((account) => {
-		if (account.status !== "active") return false;
 		const config = configMap[account.templateId];
 		return config !== undefined && config.triggers.includes(event.type);
 	});
-	console.log("[feed:process] triggered accounts:", triggeredAccounts.length);
 
-	if (triggeredAccounts.length === 0) {
+	// Pick one random account per templateId to get diverse voices, not 553 of the same type.
+	const byTemplate = new Map<string, typeof triggeredAccounts>();
+	for (const account of triggeredAccounts) {
+		const bucket = byTemplate.get(account.templateId) ?? [];
+		bucket.push(account);
+		byTemplate.set(account.templateId, bucket);
+	}
+	const sampled = [...byTemplate.values()].map(
+		(bucket) => bucket[Math.floor(Math.random() * bucket.length)],
+	);
+	console.log(
+		"[feed:process] triggered accounts:",
+		triggeredAccounts.length,
+		"sampled:",
+		sampled.length,
+	);
+
+	if (sampled.length === 0) {
 		console.log("[feed:process] no triggered accounts, skipping");
 		return;
 	}
 
-	const agents: ResolvedAgent[] = triggeredAccounts.map((account) => {
+	const agents: ResolvedAgent[] = sampled.map((account) => {
 		const config = configMap[account.templateId]!;
 		return {
 			...config,
@@ -74,37 +89,65 @@ async function handleEvent(event: FeedEvent): Promise<void> {
 		agents.length,
 		"agents",
 	);
-	const response = await fetch(FEED_API_URL, {
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify({ event, agents }),
-	});
+	let response: Response;
+	try {
+		response = await fetch(FEED_API_URL, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ event, agents }),
+		});
+	} catch (fetchErr) {
+		console.error("[feed:process] fetch FAILED (network error):", fetchErr);
+		throw fetchErr;
+	}
 	console.log("[feed:process] response status:", response.status);
 
 	if (!response.ok) {
+		const text = await response.text().catch(() => "(unreadable)");
+		console.error("[feed:process] error body:", text);
 		throw new Error(
-			`[feed] POST ${FEED_API_URL} returned ${response.status} ${response.statusText}`,
+			`[feed] POST ${FEED_API_URL} returned ${response.status} ${response.statusText}: ${text}`,
 		);
 	}
 
-	const data = (await response.json()) as { posts: GeneratedPost[] };
+	let data: { posts: GeneratedPost[] };
+	try {
+		data = (await response.json()) as { posts: GeneratedPost[] };
+	} catch (jsonErr) {
+		console.error("[feed:process] failed to parse JSON response:", jsonErr);
+		throw jsonErr;
+	}
 	const posts = data.posts ?? [];
 	console.log("[feed:process] posts received:", posts.length);
+	for (const post of posts) {
+		console.log(`[feed:post] @${post.handle}: ${post.body}`);
+	}
 	await Promise.all(posts.map((post) => addPost(post)));
 	console.log(`[feed:process] ${event.type}: saved ${posts.length} post(s)`);
 }
 
 async function processNext(): Promise<void> {
-	if (queue.length === 0) {
-		processing = false;
-		return;
-	}
-	processing = true;
-	const event = queue.shift()!;
-	await handleEvent(event).catch((err) =>
-		console.error("[feed] error processing event:", err),
+	console.log(
+		"[feed:queue] processNext called, queue:",
+		queue.length,
+		"processing:",
+		processing,
 	);
-	void processNext();
+	try {
+		if (queue.length === 0) {
+			processing = false;
+			return;
+		}
+		processing = true;
+		const event = queue.shift()!;
+		await handleEvent(event).catch((err) =>
+			console.error("[feed] error processing event:", err),
+		);
+		void processNext();
+	} catch (err) {
+		console.error("[feed:queue] processNext threw synchronously:", err);
+		processing = false;
+	}
 }
 
 export function processFeedEvent(event: FeedEvent): void {
@@ -115,5 +158,16 @@ export function processFeedEvent(event: FeedEvent): void {
 		queue.length,
 	);
 	queue.push(event);
-	if (!processing) void processNext();
+	console.log(
+		"[feed:process] queue after push:",
+		queue.length,
+		"processing:",
+		processing,
+	);
+	if (!processing) {
+		console.log("[feed:process] kicking off processNext");
+		void processNext();
+	} else {
+		console.log("[feed:process] already processing, event will be picked up");
+	}
 }

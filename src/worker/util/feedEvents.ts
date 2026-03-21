@@ -18,6 +18,7 @@ export function emitFeedEvent(
 		...(eventMetadata !== undefined ? { eventMetadata } : {}),
 	};
 
+	console.log("[feed:emit] emitFeedEvent:", type);
 	// Process the event inline in the game worker (fire-and-forget).
 	processFeedEvent(event);
 

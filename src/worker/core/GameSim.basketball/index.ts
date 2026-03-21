@@ -18,7 +18,6 @@ import {
 import getWinner from "../../../common/getWinner.ts";
 import { formatClock } from "../../../common/formatClock.ts";
 import PlayByPlayLogger from "./PlayByPlayLogger.ts";
-import { emitFeedEvent } from "../../util/feedEvents.ts";
 
 const SHOT_CLOCK = 24;
 // const NUM_TIMEOUTS_MAX_FINAL_PERIOD = 4;
@@ -684,35 +683,7 @@ class GameSim extends GameSimBase {
 				break;
 			}
 
-			// --- Phase 9: HALFTIME hook (no IDB reads — in-memory only) ---
-			if (period === 2 && local.get("liveGameInProgress")) {
-				const liveStats = {
-					score: [this.team[0].stat.pts, this.team[1].stat.pts] as [
-						number,
-						number,
-					],
-					quarter: 2,
-					statLeaders: assembleStatLeaders(this),
-				};
-				// Build minimal context from in-memory state only — no IDB reads.
-				const minimalContext = {
-					liveGame: {
-						score: liveStats.score,
-						quarter: liveStats.quarter,
-						statLeaders: liveStats.statLeaders,
-					},
-					teams: [],
-					players: [],
-					recentGames: [],
-					standings: [],
-					transactions: [],
-				};
-				void Promise.resolve()
-					.then(() => emitFeedEvent("HALFTIME", minimalContext))
-					.catch((err) =>
-						console.error("[feedHook] failed to emit HALFTIME", err),
-					);
-			}
+			// --- Phase 9: HALFTIME hook (disabled — toUI circular dep in GameSim context) ---
 			// --- end Phase 9 hook ---
 
 			period += 1;

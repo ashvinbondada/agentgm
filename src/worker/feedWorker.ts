@@ -59,7 +59,6 @@ async function handleEvent(event: FeedEvent): Promise<void> {
 	// b. Filter to active accounts whose templateId has a config that triggers
 	//    on this event type.
 	const triggeredAccounts = allAccounts.filter((account) => {
-		if (account.status !== "active") return false;
 		const config = configMap[account.templateId];
 		return config !== undefined && config.triggers.includes(event.type);
 	});

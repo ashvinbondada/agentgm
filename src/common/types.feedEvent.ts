@@ -90,7 +90,6 @@ export type Account = {
 	pid: number | null;
 	tid: number | null;
 	templateId: string;
-	status: "active" | "dormant";
 	avatarUrl: string | null;
 	createdAt: number;
 };

@@ -44,7 +44,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 			? (JSON.parse(rawBody) as { event: FeedEvent; agents: ResolvedAgent[] })
 			: (rawBody as { event: FeedEvent; agents: ResolvedAgent[] });
 
-	const { event, agents } = body;
+	const { event, agents: rawAgents } = body;
+	// Hard cap — never process more than 8 agents per request regardless of what was sent.
+	const agents = rawAgents.slice(0, 8);
+	console.log(
+		`[api/feed] ${event.type}: processing ${agents.length}/${rawAgents.length} agents`,
+	);
 	const posts: GeneratedPost[] = [];
 
 	for (const agent of agents) {
