@@ -79,6 +79,7 @@ export type FeedEvent = {
 	type: FeedEventType;
 	timestamp: number;
 	context: SocialContext;
+	eventMetadata?: Record<string, unknown>;
 };
 
 export type Account = {
@@ -124,4 +125,9 @@ export type ThreadRecord = {
 	openedAt: number;
 	expiresAt: number;
 	participantAgents: string[];
+};
+
+export type ResolvedAgent = AgentConfig & {
+	agentId: string;
+	displayName: string;
 };

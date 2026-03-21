@@ -4,8 +4,10 @@ import { idb } from "../../db/index.ts";
 import {
 	achievement,
 	defaultGameAttributes,
+	emitFeedEvent,
 	g,
 	genMessage,
+	getSocialContext,
 	helpers,
 	local,
 	toUI,
@@ -326,6 +328,24 @@ const newPhaseBeforeDraft = async (
 	}
 
 	await season.doAwards(conditions);
+
+	// Phase 13 — SEASON_AWARD feed event
+	// Awards are now written to idb.cache.awards and award logEvents are in idb.league.
+	// getSocialContext will pick up winners via context.players (top OVR active
+	// players) and context.transactions (if "award" is in the eventTypes filter).
+	// Fire-and-forget; do not await.
+	void getSocialContext("SEASON_AWARD")
+		.then((context) =>
+			emitFeedEvent("SEASON_AWARD", context, {
+				awardType: "season",
+				playerName: "",
+				teamName: "",
+			}),
+		)
+		.catch((err) =>
+			console.error("[feedHook] failed to emit SEASON_AWARD", err),
+		);
+
 	const teams = await idb.getCopies.teamsPlus(
 		{
 			attrs: ["tid"],

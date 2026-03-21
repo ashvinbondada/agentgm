@@ -19,7 +19,9 @@ import writeTeamStats from "./writeTeamStats.ts";
 import { idb } from "../../db/index.ts";
 import {
 	advStats,
+	emitFeedEvent,
 	g,
+	getSocialContext,
 	helpers,
 	lock,
 	logEvent,
@@ -311,6 +313,31 @@ const play = async (
 		}
 
 		await advStats();
+
+		// --- Phase 10 hooks ---
+		if (injuryTexts.length > 0) {
+			void getSocialContext("INJURY")
+				.then((context) => emitFeedEvent("INJURY", context))
+				.catch((err) => console.error("[feedHook] failed to emit INJURY", err));
+		}
+
+		for (const result of results) {
+			const homeTeam = result.team[0];
+			const awayTeam = result.team[1];
+			const eventMetadata = {
+				gid: result.gid,
+				homeScore: homeTeam.stat.pts,
+				awayScore: awayTeam.stat.pts,
+				homeName: homeTeam.name,
+				awayName: awayTeam.name,
+			};
+			void getSocialContext("GAME_END")
+				.then((context) => emitFeedEvent("GAME_END", context, eventMetadata))
+				.catch((err) =>
+					console.error("[feedHook] failed to emit GAME_END", err),
+				);
+		}
+		// --- end Phase 10 hooks ---
 
 		const playoffsOver =
 			g.get("phase") === PHASE.PLAYOFFS &&
