@@ -169,10 +169,10 @@ const menuItems: (MenuItemLink | MenuItemHeader)[] = [
 			},
 			{
 				type: "link",
-				active: (pageID) => pageID === "socialFeed",
+				active: (pageID) => pageID === "agentSocial",
 				league: true,
 				commandPalette: true,
-				path: ["social_feed"],
+				path: ["agent_social"],
 				text: "Social",
 			},
 		],
