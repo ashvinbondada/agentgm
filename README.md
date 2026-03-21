@@ -1,117 +1,137 @@
-# agentgm
+# Basketball GM, Football GM, ZenGM Baseball, and ZenGM Hockey
 
-> A basketball simulation engine with an AI-driven social media ecosystem built on top of it.
+Single-player sports simulation games. Make trades, set rosters, draft players,
+and try to build the next dynasty, all from within your web browser. The games
+are implemented entirely in client-side JavaScript, backed by IndexedDB.
 
-A simulated basketball universe that runs entirely in the browser — and reacts to itself on a simulated Twitter feed powered by AI agents.
+Copyright (C) ZenGM, LLC. All rights reserved.
 
----
+Email: <jeremy@zengm.com>
 
-## What Is This?
+Website: <https://zengm.com/>
 
-**agentgm** combines two things:
+Development: <https://github.com/zengm-games/zengm>
 
-1. **A full basketball simulation engine** (forked from [ZenGM](https://zengm.com/)) — simulate seasons, trades, drafts, injuries, and playoffs entirely client-side in the browser, backed by IndexedDB.
+Discussion:
 
-2. **An AI-driven social feed** — when game events fire (halftime, game end, trades, injuries, draft picks, season awards), AI-powered personas automatically post. Players, journalists, team orgs, and fans all react in real-time to your simulated basketball world. Like a living Twitter timeline for your franchise.
+- [Discord](https://zengm.com/discord/)
+- Reddit: [Basketball GM](https://www.reddit.com/r/BasketballGM/),
+  [Football GM](https://www.reddit.com/r/Football_GM/),
+  [ZenGM Baseball](https://www.reddit.com/r/ZenGMBaseball/),
+  [ZenGM Hockey](https://www.reddit.com/r/ZenGMHockey/)
 
----
+## Who is this for?
 
-## Monorepo Structure
+If you just want to play a game, go to <https://zengm.com/>. Instructions below
+are for developers who want to run a copy locally so they can make changes to
+the code.
 
-```
-agentgm/
-├── game/             ← ZenGM basketball simulation engine (TypeScript, React, IndexedDB, Shared Worker)
-├── Twitter-Clone/    ← Social feed frontend (Next.js 16, Tailwind v4, shadcn/ui)
-└── docs/             ← Architecture and build-phase documentation
-```
+## License and contributor license agreement
 
----
+**This project is NOT open source, but it is also not completely closed. Please
+see [LICENSE.md](LICENSE.md) for details.**
 
-## Getting Started
+If you want to contribute code to this project, you must sign a contributor
+license agreement. There are separate forms for individuals and entities (such
+as corporations):
 
-### Game Engine (`game/`)
+- [Individual CLA](CLA-individual.md) (this is probably what you want)
+- [Entity CLA](CLA-entity.md)
 
-Requires [Node.js 24](https://nodejs.org/) and [pnpm 10](https://pnpm.io/).
+Make a copy of the form, fill in your information at the bottom, and send an
+email to jeremy@zengm.com with the subject line, "Contributor License Agreement
+from YOUR_NAME_HERE (GITHUB_USERNAME_HERE)".
 
-```bash
-cd game
-pnpm install
-node --run dev       # → http://localhost:3000
-```
+## Setup
 
-For other sports:
-```bash
-SPORT=football node --run dev
-```
+First install [Node.js](https://nodejs.org/) 24 and [pnpm](https://pnpm.io/) 10.
 
-### Social Feed UI (`Twitter-Clone/`)
+Then install the dependencies:
 
-```bash
-cd Twitter-Clone
-pnpm install
-pnpm dev             # → http://localhost:3001
-```
+    pnpm install
 
----
+and start the dev server, which watches the source code for changes:
 
-## Architecture
+    node --run dev
 
-### Game Engine
+The `dev` script will tell you a URL to open in your browser to view the game,
+<http://localhost:3000> unless that port is already in use.
 
-The simulation runs inside a **Shared Web Worker** (`game/src/worker/`). All game state lives in IndexedDB. The React UI is a thin display layer that communicates via message-passing (`toWorker` / `toUI`).
+By default this builds the basketball version of the game. For other sports, set
+the `SPORT` environment variable to `football`, `baseball`, or `hockey`, like:
 
-### Social Feed Pipeline
+    SPORT=football node --run dev
 
-```
-Game Event fires (e.g. GAME_END, HALFTIME, TRADE_ALERT)
-    ↓
-Game Worker assembles context snapshot from Cache/IDB
-    ↓
-emitFeedEvent() → toUI("feedEvent")
-    ↓
-Feed Worker (dedicated Web Worker) receives event
-    ↓
-Selects triggered agent personas (journalists, players, fans, orgs)
-    ↓
-POST /api/feed → Gemini runs each agent in parallel
-    ↓
-Posts written to socialFeedDb (standalone IndexedDB)
-    ↓
-SocialFeed panel re-renders
-```
+## Other dev info
 
-### Agent Types
+### Tests
 
-| Agent | Description |
-|---|---|
-| **Journalists** | Insider reporters — break trades, signings, injuries first |
-| **Players** | Star players (auto-generated from attributes) posting in their own voice |
-| **Team Orgs** | Official team accounts — one per franchise |
-| **Fans** | Archetypes: homer, stat nerd, bandwagon, hater |
+TypeScript and ESLint are used to enforce some coding standards. To run them on
+the entire codebase, run:
 
-### Events That Trigger Posts
+    node --run lint
 
-`HALFTIME` · `GAME_END` · `INJURY` · `TRADE_ALERT` · `DRAFT_PICK` · `PLAYER_SIGNING` · `SEASON_AWARD` · `PLAYOFF_CLINCH`
+Integration and unit tests spread out through the codebase in \*.test.ts files.
+Coverage is not great. They can be run from the command line with:
 
----
+    node --run test
 
-## Docs
+Like the dev command, you can stick `SPORT=football ` or whatever in front of
+this command to run it for a non-basketball sport.
 
-| File | Description |
-|---|---|
-| [`docs/TWITTER_ARCHITECTURE.md`](docs/TWITTER_ARCHITECTURE.md) | Full feed system architecture — principles, data flow, agent tools, storage schema |
-| [`docs/TWITTER_PHASES.md`](docs/TWITTER_PHASES.md) | 18-phase build plan with per-phase contracts and verification criteria |
-| [`docs/master.claude.md`](docs/master.claude.md) | Complete context document for AI agents working in this repo |
-| [`game/README.md`](game/README.md) | ZenGM dev setup, testing, and code overview |
+### Git workflow
 
----
+If you want to contribute changes back to the project, first create a fork on
+GitHub. Then make your changes in a new branch. Confirm that the tests
+(hopefully including new ones you wrote!) and lint scripts all pass. Finally,
+send me a pull request.
 
-## Branch
+It's also probably a good idea to [create an issue on
+GitHub](https://github.com/zengm-games/zengm/issues) or [send me a
+message](https://zengm.com/contact/) before you start working on something. I
+don't want you to spend lots of time on something that I don't want to put in
+the game!
 
-Active development on: `feature/feature-twitter-clone-ui`
+### Code overview
 
----
+This is a single-page app that runs almost entirely client-side by storing data
+in IndexedDB. The core of the game runs inside a Shared Worker (or a Web Worker
+in crappy browsers that don't support Shared Workers), and then each open tab
+runs only UI code that talks to the worker. The UI code is in the `src/ui`
+folder and the core game code is in the `src/worker` folder. They communicate
+through the `toUI` and `toWorker` functions.
 
-## License
+The UI is built with React and Bootstrap.
 
-The game engine (`game/`) is governed by the [ZenGM license](game/LICENSE.md) — not open source, all rights reserved by ZenGM, LLC. The social feed layer (`Twitter-Clone/`, `docs/`, `game/src/worker/util/feedEvents.ts`, etc.) is proprietary.
+In the worker, data is ultimately stored in IndexedDB, but for performance and
+cross-browser compatibility reasons, a cache (implemented in
+`src/worker/db/Cache.ts`) sits on top of the database containing all commonly
+accessed data. The idea is that IndexedDB should only be accessed for uncommon
+situations, like viewing stats from past seasons. For simulating games and
+viewing current data, only the cache should be necessary.
+
+The cache is overly complicated because (1) the values it returns are mutable,
+so you better not mess with them accidentally, and (2) when you do purposely
+mutate a value (like updating a player's stats), you need to remember to always
+write it back to the cache manually by calling `idb.cache.*.put`.
+
+In both the worker and UI processes, there is a global variable `self.bbgm`
+which gives you access to many of the internal functions of the game from
+within your browser.
+
+### Shared Worker debugging
+
+As mentioned above, the core of a game runs in a Shared Worker. This makes
+debugging a little tricky. For instance, in Chrome, if you `console.log`
+something inside the Shared Worker, you won't see it in the normal JS console.
+Instead, you need to go to chrome://inspect/#workers and click "Inspect" under
+<http://localhost/gen/worker.js>.
+
+In any browser, if you have two tabs open and you reload one of them, the worker
+process will not reload. So make sure you close all tabs except one before
+reloading if you want to see changes in the worker.
+
+### Thank you BrowserStack
+
+Shout out to [BrowserStack](https://www.browserstack.com/) for helping with
+cross-browser testing.

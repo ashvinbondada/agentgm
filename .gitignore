@@ -1,9 +1,14 @@
-# Root-level monorepo ignores
-node_modules/
-.DS_Store
-
-# Twitter Clone UI build outputs
-Twitter-Clone/.next/
-Twitter-Clone/node_modules/
-Twitter-Clone/dist/
-Twitter-Clone/out/
+*~
+*.pyc
+*.sublime-project
+*.sublime-workspace
+/node_modules
+/npm-debug.log
+/build
+/local.log
+/stats-*.html
+/.idea/
+/foo
+/.vscode
+/tools/names-groups-html
+.vercel
