@@ -131,7 +131,7 @@ export const renderMessageParts = (
 				return (
 					<div
 						key={index}
-						className={`agent-chat-text agent-chat-md${isActivelyStreaming ? " agent-chat-streaming" : ""}`}
+						className={`agent-messages-text agent-messages-md${isActivelyStreaming ? " agent-messages-streaming" : ""}`}
 					>
 						<ReactMarkdown
 							remarkPlugins={[remarkGfm]}
@@ -141,14 +141,14 @@ export const renderMessageParts = (
 							{part.text}
 						</ReactMarkdown>
 						{isActivelyStreaming ? (
-							<span className="agent-chat-cursor" />
+							<span className="agent-messages-cursor" />
 						) : null}
 					</div>
 				);
 			}
 
 			return (
-				<div key={index} className="agent-chat-text">
+				<div key={index} className="agent-messages-text">
 					{part.text}
 				</div>
 			);

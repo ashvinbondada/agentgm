@@ -46,12 +46,12 @@ export const AgentChatCore = ({ mode }: { mode: "panel" | "fullPage" }) => {
 		}
 
 		return (
-			<div
-				className="agent-chat-full d-flex border rounded"
-				style={{ height: "calc(100vh - 200px)" }}
-			>
-				<div className="agent-chat-sidebar border-end d-flex flex-column">
-					<InboxView activeId={activeConversationId} showHeader />
+			<div className="agent-messages-full d-flex border rounded" style={{ height: "calc(100vh - 200px)" }}>
+				<div className="agent-messages-sidebar border-end d-flex flex-column">
+					<InboxView
+						activeId={activeConversationId}
+						showHeader
+					/>
 				</div>
 				<div
 					className="flex-grow-1 d-flex flex-column"
@@ -74,7 +74,7 @@ export const AgentChatCore = ({ mode }: { mode: "panel" | "fullPage" }) => {
 	}
 
 	return (
-		<div className="agent-chat-panel card shadow">
+		<div className="agent-messages-panel card shadow">
 			{content}
 			<style>{agentChatStyles}</style>
 		</div>
@@ -82,12 +82,12 @@ export const AgentChatCore = ({ mode }: { mode: "panel" | "fullPage" }) => {
 };
 
 export const agentChatStyles = `
-	.agent-chat-sidebar {
+	.agent-messages-sidebar {
 		width: 320px;
 		min-width: 320px;
 		max-width: 320px;
 	}
-	.agent-chat-panel {
+	.agent-messages-panel {
 		position: fixed;
 		right: 16px;
 		bottom: 72px;
@@ -97,91 +97,91 @@ export const agentChatStyles = `
 		display: flex;
 		flex-direction: column;
 	}
-	.agent-chat-full {
+	.agent-messages-full {
 		min-height: 60vh;
 	}
-	.agent-chat-header {
+	.agent-messages-header {
 		height: 45px;
 		min-height: 45px;
 	}
-	.agent-chat-inbox-active {
+	.agent-messages-inbox-active {
 		background: var(--bs-tertiary-bg, rgba(0, 0, 0, 0.04)) !important;
 		color: inherit !important;
 	}
-	.agent-chat-messages {
+	.agent-messages-messages {
 		flex: 1;
 		min-height: 0;
 		max-height: 100%;
 	}
-	.agent-chat-avatar {
+	.agent-messages-avatar {
 		align-self: flex-end;
 		margin-bottom: 2px;
 	}
-	.agent-chat-bubble {
+	.agent-messages-bubble {
 		max-width: 85%;
 		padding: 0.5rem 0.75rem;
 		border-radius: 1rem;
 		word-break: break-word;
 	}
-	.agent-chat-bubble-user {
+	.agent-messages-bubble-user {
 		background: var(--bs-primary, #0d6efd);
 		color: #fff;
 		border-bottom-right-radius: 0.25rem;
 	}
-	.agent-chat-bubble-user a {
+	.agent-messages-bubble-user a {
 		color: #cfe2ff;
 	}
-	.agent-chat-bubble-assistant {
+	.agent-messages-bubble-assistant {
 		background: var(--bs-secondary-bg, rgba(0, 0, 0, 0.06));
 		border-bottom-left-radius: 0.25rem;
 	}
-	.agent-chat-msg.role-user .agent-chat-text {
+	.agent-messages-msg.role-user .agent-messages-text {
 		white-space: pre-wrap;
 	}
-	.agent-chat-md {
+	.agent-messages-md {
 		font-size: 0.9375rem;
 		line-height: 1.45;
 	}
-	.agent-chat-md :first-child {
+	.agent-messages-md :first-child {
 		margin-top: 0;
 	}
-	.agent-chat-md :last-child {
+	.agent-messages-md :last-child {
 		margin-bottom: 0;
 	}
-	.agent-chat-md p {
+	.agent-messages-md p {
 		margin: 0.35em 0;
 	}
-	.agent-chat-md h1,
-	.agent-chat-md h2,
-	.agent-chat-md h3,
-	.agent-chat-md h4 {
+	.agent-messages-md h1,
+	.agent-messages-md h2,
+	.agent-messages-md h3,
+	.agent-messages-md h4 {
 		font-size: 1rem;
 		font-weight: 600;
 		margin: 0.65em 0 0.35em;
 	}
-	.agent-chat-md ul,
-	.agent-chat-md ol {
+	.agent-messages-md ul,
+	.agent-messages-md ol {
 		margin: 0.35em 0;
 		padding-left: 1.25rem;
 	}
-	.agent-chat-md li {
+	.agent-messages-md li {
 		margin: 0.15em 0;
 	}
-	.agent-chat-md strong {
+	.agent-messages-md strong {
 		font-weight: 600;
 	}
-	.agent-chat-md a {
+	.agent-messages-md a {
 		word-break: break-word;
 	}
-	.agent-chat-md code {
+	.agent-messages-md code {
 		font-size: 0.8125rem;
 	}
-	.agent-chat-md :not(pre) > code {
+	.agent-messages-md :not(pre) > code {
 		padding: 0.15em 0.35em;
 		border-radius: 0.25rem;
 		background: var(--bs-secondary-bg, rgba(0, 0, 0, 0.06));
 	}
-	.agent-chat-md pre {
+	.agent-messages-md pre {
 		font-size: 0.8125rem;
 		margin: 0.5em 0;
 		padding: 0.5rem 0.75rem;
@@ -189,71 +189,71 @@ export const agentChatStyles = `
 		border-radius: 0.375rem;
 		background: var(--bs-secondary-bg, rgba(0, 0, 0, 0.05));
 	}
-	.agent-chat-md pre code {
+	.agent-messages-md pre code {
 		padding: 0;
 		background: none;
 	}
-	.agent-chat-md blockquote {
+	.agent-messages-md blockquote {
 		margin: 0.5em 0;
 		padding: 0.25rem 0 0.25rem 0.75rem;
 		border-left: 3px solid var(--bs-border-color, #dee2e6);
 		color: var(--bs-secondary-color, #6c757d);
 	}
-	.agent-chat-md hr {
+	.agent-messages-md hr {
 		margin: 0.75em 0;
 		border: none;
 		border-top: 1px solid var(--bs-border-color, #dee2e6);
 	}
-	.agent-chat-md table {
+	.agent-messages-md table {
 		width: 100%;
 		margin: 0.5em 0;
 		border-collapse: collapse;
 		font-size: 0.85rem;
 	}
-	.agent-chat-md th,
-	.agent-chat-md td {
+	.agent-messages-md th,
+	.agent-messages-md td {
 		padding: 0.35rem 0.6rem;
 		border: 1px solid var(--bs-border-color, #dee2e6);
 		text-align: left;
 	}
-	.agent-chat-md th {
+	.agent-messages-md th {
 		font-weight: 600;
 		background: var(--bs-tertiary-bg, rgba(0, 0, 0, 0.03));
 	}
-	.agent-chat-md tbody tr:hover {
+	.agent-messages-md tbody tr:hover {
 		background: var(--bs-tertiary-bg, rgba(0, 0, 0, 0.02));
 	}
 
 	/* Typing indicator */
-	.agent-chat-typing {
+	.agent-messages-typing {
 		padding: 4px 0;
-		animation: agent-chat-pulse 1.5s ease-in-out infinite;
+		animation: agent-messages-pulse 1.5s ease-in-out infinite;
 	}
-	@keyframes agent-chat-pulse {
+	@keyframes agent-messages-pulse {
 		0%, 100% { opacity: 0.4; }
 		50% { opacity: 1; }
 	}
 
 	/* Streaming cursor */
-	.agent-chat-cursor {
+	.agent-messages-cursor {
 		display: inline-block;
 		width: 2px;
 		height: 1em;
 		background: currentColor;
 		margin-left: 1px;
 		vertical-align: text-bottom;
-		animation: agent-chat-blink 0.8s step-end infinite;
+		animation: agent-messages-blink 0.8s step-end infinite;
 	}
-	@keyframes agent-chat-blink {
+	@keyframes agent-messages-blink {
 		0%, 100% { opacity: 1; }
 		50% { opacity: 0; }
 	}
 
 	/* Streaming text fade-in */
-	.agent-chat-streaming {
-		animation: agent-chat-fadein 0.15s ease-out;
+	.agent-messages-streaming {
+		animation: agent-messages-fadein 0.15s ease-out;
 	}
-	@keyframes agent-chat-fadein {
+	@keyframes agent-messages-fadein {
 		from { opacity: 0.7; }
 		to { opacity: 1; }
 	}
@@ -282,7 +282,7 @@ const AgentChat = () => {
 		<>
 			<button
 				type="button"
-				className="btn btn-primary shadow agent-chat-fab"
+				className="btn btn-primary shadow agent-messages-fab"
 				onClick={() => toggle()}
 				title="My Staff chat"
 				aria-expanded={open}
@@ -291,7 +291,7 @@ const AgentChat = () => {
 			</button>
 			{open ? <AgentChatCore mode="panel" /> : null}
 			<style>{`
-				.agent-chat-fab {
+				.agent-messages-fab {
 					position: fixed;
 					right: 16px;
 					bottom: 16px;
