@@ -1,20 +1,14 @@
 import { finances, realRosters, season, team } from "../index.ts";
 import { idb } from "../../db/index.ts";
-import {
-	achievement,
-	emitFeedEvent,
-	g,
-	getSocialContext,
-	helpers,
-	local,
-	logEvent,
-} from "../../util/index.ts";
+import { achievement, g, helpers, local, logEvent } from "../../util/index.ts";
 import type {
 	Conditions,
 	PhaseReturn,
 	PlayoffSeries,
 } from "../../../common/types.ts";
 import { PHASE } from "../../../common/constants.ts";
+import { emitFeedEvent } from "../../util/feedEvents.ts";
+import { getSocialContext } from "../../util/getSocialContext.ts";
 
 const newPhasePlayoffs = async (
 	conditions: Conditions,

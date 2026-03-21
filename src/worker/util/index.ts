@@ -9,8 +9,6 @@ export { default as checkNaNs } from "./checkNaNs.ts";
 export { default as defaultInjuries } from "./defaultInjuries.ts";
 export { default as defaultTragicDeaths } from "./defaultTragicDeaths.ts";
 export { default as env } from "./env.ts";
-export { emitFeedEvent } from "./feedEvents.ts";
-export { getSocialContext } from "./getSocialContext.ts";
 export * as face from "./face.ts";
 export { default as formatEventText } from "./formatEventText.ts";
 export { default as g } from "./g.ts";

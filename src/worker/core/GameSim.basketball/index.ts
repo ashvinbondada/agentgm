@@ -1,4 +1,4 @@
-import { g, helpers, random, local, emitFeedEvent } from "../../util/index.ts";
+import { g, helpers, random, local } from "../../util/index.ts";
 import { PHASE, STARTING_NUM_TIMEOUTS } from "../../../common/index.ts";
 import jumpBallWinnerStartsThisPeriodWithPossession from "./jumpBallWinnerStartsThisPeriodWithPossession.ts";
 import getInjuryRate from "./getInjuryRate.ts";
@@ -18,6 +18,7 @@ import {
 import getWinner from "../../../common/getWinner.ts";
 import { formatClock } from "../../../common/formatClock.ts";
 import PlayByPlayLogger from "./PlayByPlayLogger.ts";
+import { emitFeedEvent } from "../../util/feedEvents.ts";
 
 const SHOT_CLOCK = 24;
 // const NUM_TIMEOUTS_MAX_FINAL_PERIOD = 4;

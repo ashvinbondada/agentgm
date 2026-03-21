@@ -19,9 +19,7 @@ import writeTeamStats from "./writeTeamStats.ts";
 import { idb } from "../../db/index.ts";
 import {
 	advStats,
-	emitFeedEvent,
 	g,
-	getSocialContext,
 	helpers,
 	lock,
 	logEvent,
@@ -42,6 +40,8 @@ import allowForceTie from "../../../common/allowForceTie.ts";
 import getWinner from "../../../common/getWinner.ts";
 import { setLiveSimRatingsStatsPopoverPlayers } from "./setLiveSimRatingsStatsPopoverPlayers.ts";
 import { getOneUpcomingGame } from "../../util/recomputeLocalUITeamOvrs.ts";
+import { emitFeedEvent } from "../../util/feedEvents.ts";
+import { getSocialContext } from "../../util/getSocialContext.ts";
 
 /**
  * Play one or more days of games.

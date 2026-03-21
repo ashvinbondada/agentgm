@@ -1,15 +1,11 @@
 import { isSport, PHASE } from "../../../common/index.ts";
 import setContract from "./setContract.ts";
-import {
-	g,
-	helpers,
-	logEvent,
-	emitFeedEvent,
-	getSocialContext,
-} from "../../util/index.ts";
+import { g, helpers, logEvent } from "../../util/index.ts";
 import type { Phase, Player, PlayerContract } from "../../../common/types.ts";
 import genJerseyNumber from "./genJerseyNumber.ts";
 import setJerseyNumber from "./setJerseyNumber.ts";
+import { emitFeedEvent } from "../../util/feedEvents.ts";
+import { getSocialContext } from "../../util/getSocialContext.ts";
 
 const sign = async (
 	p: Player,

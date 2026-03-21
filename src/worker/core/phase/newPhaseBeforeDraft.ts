@@ -4,10 +4,8 @@ import { idb } from "../../db/index.ts";
 import {
 	achievement,
 	defaultGameAttributes,
-	emitFeedEvent,
 	g,
 	genMessage,
-	getSocialContext,
 	helpers,
 	local,
 	toUI,
@@ -29,6 +27,8 @@ import { doExpand, doRelocate } from "./relocateExpand.ts";
 import addAward from "../player/addAward.ts";
 import { analyticsEventLocal } from "../../../common/analyticsEventLocal.ts";
 import { updateLotteryChancesAfterPlayoffs } from "../draft/cola.ts";
+import { emitFeedEvent } from "../../util/feedEvents.ts";
+import { getSocialContext } from "../../util/getSocialContext.ts";
 
 const INFLATION_GAME_ATTRIBUTES = [
 	"salaryCap",

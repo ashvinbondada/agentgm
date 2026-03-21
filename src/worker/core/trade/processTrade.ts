@@ -8,11 +8,11 @@ import {
 	toUI,
 	updatePlayMenu,
 	recomputeLocalUITeamOvrs,
-	emitFeedEvent,
-	getSocialContext,
 } from "../../util/index.ts";
 import type { TradeEventTeams } from "../../../common/types.ts";
 import { getTeammateJerseyNumbers } from "../player/genJerseyNumber.ts";
+import { emitFeedEvent } from "../../util/feedEvents.ts";
+import { getSocialContext } from "../../util/getSocialContext.ts";
 
 const processTrade = async (
 	tids: [number, number],
