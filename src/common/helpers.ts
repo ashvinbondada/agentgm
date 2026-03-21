@@ -277,216 +277,36 @@ const getTeamsDefault = (): TeamBasic[] => {
 		]);
 	} else if (isSport("basketball")) {
 		teams = getTeamInfos([
-			{
-				tid: 0,
-				cid: 0,
-				did: 2,
-
-				abbrev: "ATL",
-			},
-			{
-				tid: 1,
-				cid: 0,
-				did: 2,
-
-				abbrev: "BAL",
-			},
-			{
-				tid: 2,
-				cid: 0,
-				did: 0,
-
-				abbrev: "BOS",
-			},
-			{
-				tid: 3,
-				cid: 0,
-				did: 1,
-
-				abbrev: "CHI",
-			},
-			{
-				tid: 4,
-				cid: 0,
-				did: 1,
-
-				abbrev: "CIN",
-			},
-			{
-				tid: 5,
-				cid: 0,
-				did: 1,
-
-				abbrev: "CLE",
-			},
-			{
-				tid: 6,
-				cid: 1,
-				did: 3,
-
-				abbrev: "DAL",
-			},
-			{
-				tid: 7,
-				cid: 1,
-				did: 4,
-
-				abbrev: "DEN",
-			},
-			{
-				tid: 8,
-				cid: 0,
-				did: 1,
-
-				abbrev: "DET",
-			},
-			{
-				tid: 9,
-				cid: 1,
-				did: 3,
-
-				abbrev: "HOU",
-			},
-			{
-				tid: 10,
-				cid: 1,
-				did: 5,
-
-				abbrev: "LV",
-			},
-			{
-				tid: 11,
-				cid: 1,
-				did: 5,
-
-				abbrev: "LA",
-			},
-			{
-				tid: 12,
-				cid: 1,
-				did: 3,
-
-				abbrev: "MXC",
-			},
-			{
-				tid: 13,
-				cid: 0,
-				did: 2,
-
-				abbrev: "MIA",
-			},
-			{
-				tid: 14,
-				cid: 1,
-				did: 4,
-
-				abbrev: "MIN",
-			},
-			{
-				tid: 15,
-				cid: 0,
-				did: 0,
-
-				abbrev: "MON",
-			},
-			{
-				tid: 16,
-				cid: 0,
-				did: 0,
-
-				abbrev: "NYC",
-			},
-			{
-				tid: 17,
-				cid: 0,
-				did: 0,
-
-				abbrev: "PHI",
-			},
-			{
-				tid: 18,
-				cid: 1,
-				did: 3,
-
-				abbrev: "PHO",
-			},
-			{
-				tid: 19,
-				cid: 0,
-				did: 1,
-
-				abbrev: "PIT",
-			},
-			{
-				tid: 20,
-				cid: 1,
-				did: 4,
-
-				abbrev: "POR",
-			},
-			{
-				tid: 21,
-				cid: 1,
-				did: 5,
-
-				abbrev: "SAC",
-			},
-			{
-				tid: 22,
-				cid: 1,
-				did: 5,
-
-				abbrev: "SD",
-			},
-			{
-				tid: 23,
-				cid: 1,
-				did: 5,
-
-				abbrev: "SF",
-			},
-			{
-				tid: 24,
-				cid: 1,
-				did: 4,
-
-				abbrev: "SEA",
-			},
-			{
-				tid: 25,
-				cid: 1,
-				did: 3,
-
-				abbrev: "STL",
-			},
-			{
-				tid: 26,
-				cid: 0,
-				did: 2,
-
-				abbrev: "TPA",
-			},
-			{
-				tid: 27,
-				cid: 0,
-				did: 0,
-
-				abbrev: "TOR",
-			},
-			{
-				tid: 28,
-				cid: 1,
-				did: 4,
-
-				abbrev: "VAN",
-			},
-			{
-				tid: 29,
-				cid: 0,
-				did: 2,
-
-				abbrev: "WAS",
-			},
+			{ tid: 0, cid: 0, did: 2, abbrev: "ATL" },
+			{ tid: 1, cid: 0, did: 0, abbrev: "BOS" },
+			{ tid: 2, cid: 0, did: 0, abbrev: "BKN" },
+			{ tid: 3, cid: 0, did: 2, abbrev: "CHA" },
+			{ tid: 4, cid: 0, did: 1, abbrev: "CHI" },
+			{ tid: 5, cid: 0, did: 1, abbrev: "CLE" },
+			{ tid: 6, cid: 1, did: 3, abbrev: "DAL" },
+			{ tid: 7, cid: 1, did: 4, abbrev: "DEN" },
+			{ tid: 8, cid: 0, did: 1, abbrev: "DET" },
+			{ tid: 9, cid: 1, did: 3, abbrev: "HOU" },
+			{ tid: 10, cid: 0, did: 1, abbrev: "IND" },
+			{ tid: 11, cid: 1, did: 5, abbrev: "LAC" },
+			{ tid: 12, cid: 1, did: 5, abbrev: "LAL" },
+			{ tid: 13, cid: 1, did: 3, abbrev: "MEM" },
+			{ tid: 14, cid: 0, did: 2, abbrev: "MIA" },
+			{ tid: 15, cid: 0, did: 1, abbrev: "MIL" },
+			{ tid: 16, cid: 1, did: 4, abbrev: "MIN" },
+			{ tid: 17, cid: 1, did: 3, abbrev: "NOL" },
+			{ tid: 18, cid: 0, did: 0, abbrev: "NYC" },
+			{ tid: 19, cid: 1, did: 4, abbrev: "OKC" },
+			{ tid: 20, cid: 0, did: 2, abbrev: "ORL" },
+			{ tid: 21, cid: 0, did: 0, abbrev: "PHI" },
+			{ tid: 22, cid: 1, did: 5, abbrev: "PHO" },
+			{ tid: 23, cid: 1, did: 4, abbrev: "POR" },
+			{ tid: 24, cid: 1, did: 5, abbrev: "SAC" },
+			{ tid: 25, cid: 1, did: 3, abbrev: "SA" },
+			{ tid: 26, cid: 0, did: 0, abbrev: "TOR" },
+			{ tid: 27, cid: 1, did: 4, abbrev: "UTA" },
+			{ tid: 28, cid: 1, did: 5, abbrev: "GS" },
+			{ tid: 29, cid: 0, did: 2, abbrev: "WAS" },
 		]);
 	} else if (isSport("hockey")) {
 		teams = getTeamInfos([
