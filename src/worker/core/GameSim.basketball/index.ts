@@ -1,11 +1,4 @@
-import {
-	g,
-	helpers,
-	random,
-	local,
-	emitFeedEvent,
-	getSocialContext,
-} from "../../util/index.ts";
+import { g, helpers, random, local, emitFeedEvent } from "../../util/index.ts";
 import { PHASE, STARTING_NUM_TIMEOUTS } from "../../../common/index.ts";
 import jumpBallWinnerStartsThisPeriodWithPossession from "./jumpBallWinnerStartsThisPeriodWithPossession.ts";
 import getInjuryRate from "./getInjuryRate.ts";
@@ -690,7 +683,7 @@ class GameSim extends GameSimBase {
 				break;
 			}
 
-			// --- Phase 9: HALFTIME hook (fire-and-forget, only during live game) ---
+			// --- Phase 9: HALFTIME hook (no IDB reads — in-memory only) ---
 			if (period === 2 && local.get("liveGameInProgress")) {
 				const liveStats = {
 					score: [this.team[0].stat.pts, this.team[1].stat.pts] as [
@@ -700,8 +693,21 @@ class GameSim extends GameSimBase {
 					quarter: 2,
 					statLeaders: assembleStatLeaders(this),
 				};
-				void getSocialContext("HALFTIME", liveStats)
-					.then((context) => emitFeedEvent("HALFTIME", context))
+				// Build minimal context from in-memory state only — no IDB reads.
+				const minimalContext = {
+					liveGame: {
+						score: liveStats.score,
+						quarter: liveStats.quarter,
+						statLeaders: liveStats.statLeaders,
+					},
+					teams: [],
+					players: [],
+					recentGames: [],
+					standings: [],
+					transactions: [],
+				};
+				void Promise.resolve()
+					.then(() => emitFeedEvent("HALFTIME", minimalContext))
 					.catch((err) =>
 						console.error("[feedHook] failed to emit HALFTIME", err),
 					);
