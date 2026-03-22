@@ -187,6 +187,23 @@ const menuItems: (MenuItemLink | MenuItemHeader)[] = [
 	},
 	{
 		type: "header",
+		long: "Shows",
+		short: "TV",
+		league: true,
+		commandPalette: true,
+		children: [
+			{
+				type: "link",
+				active: (pageID) => pageID === "shows",
+				league: true,
+				commandPalette: true,
+				path: ["shows"],
+				text: "Podcasts",
+			},
+		],
+	},
+	{
+		type: "header",
 		long: "League",
 		short: "L",
 		league: true,

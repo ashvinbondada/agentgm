@@ -1090,6 +1090,7 @@ export const LiveGame = (props: View<"liveGame">) => {
 								<GamePodcast
 									gid={boxScore.current.gid}
 									boxScore={boxScore.current}
+									autoGenerate
 								/>
 							) : null}
 						</>

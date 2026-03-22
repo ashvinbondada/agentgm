@@ -5142,6 +5142,10 @@ const storePodcast = async (
 	await idb.league.put("podcasts", podcast);
 };
 
+const getAllPodcasts = async () => {
+	return idb.league.getAll("podcasts");
+};
+
 export default {
 	actions,
 	exhibitionGame,
@@ -5150,6 +5154,7 @@ export default {
 	toolsMenu,
 	main: {
 		acceptContractNegotiation,
+		getAllPodcasts,
 		getPodcast,
 		storePodcast,
 		addTeam,

@@ -5,6 +5,7 @@ import type { PodcastRecord } from "../../common/types.ts";
 type Props = {
 	gid: number;
 	boxScore: any;
+	autoGenerate?: boolean;
 };
 
 type PodcastState =
@@ -50,29 +51,10 @@ const buildPodcastInput = (gid: number, boxScore: any) => {
 	};
 };
 
-const GamePodcast = ({ gid, boxScore }: Props) => {
+const GamePodcast = ({ gid, boxScore, autoGenerate = false }: Props) => {
 	const [state, setState] = useState<PodcastState>({ status: "loading" });
 	const audioUrlRef = useRef<string | null>(null);
-
-	// Check IDB for existing podcast on mount
-	useEffect(() => {
-		let cancelled = false;
-		toWorker("main", "getPodcast", { gid }).then((result) => {
-			if (cancelled) return;
-			if (result) {
-				setState({ status: "ready", podcast: result });
-			} else {
-				setState({ status: "idle" });
-			}
-		});
-		return () => {
-			cancelled = true;
-			if (audioUrlRef.current) {
-				URL.revokeObjectURL(audioUrlRef.current);
-				audioUrlRef.current = null;
-			}
-		};
-	}, [gid]);
+	const generateRef = useRef<(() => Promise<void>) | null>(null);
 
 	const generate = async () => {
 		setState({ status: "loading" });
@@ -116,6 +98,32 @@ const GamePodcast = ({ gid, boxScore }: Props) => {
 			setState({ status: "error", message: err?.message ?? String(err) });
 		}
 	};
+
+	generateRef.current = generate;
+
+	// Check IDB for existing podcast on mount
+	useEffect(() => {
+		let cancelled = false;
+		toWorker("main", "getPodcast", { gid }).then((result) => {
+			if (cancelled) return;
+			if (result) {
+				setState({ status: "ready", podcast: result });
+			} else {
+				if (autoGenerate) {
+					generateRef.current?.();
+				} else {
+					setState({ status: "idle" });
+				}
+			}
+		});
+		return () => {
+			cancelled = true;
+			if (audioUrlRef.current) {
+				URL.revokeObjectURL(audioUrlRef.current);
+				audioUrlRef.current = null;
+			}
+		};
+	}, [gid, autoGenerate]);
 
 	if (state.status === "loading") {
 		return (
