@@ -21,7 +21,13 @@ function cleanPostBody(text: string): string {
 	if (bodyMatch?.[1]) {
 		cleaned = bodyMatch[1];
 	}
-	return cleaned.slice(0, 280);
+	if (cleaned.length <= 280) {
+		return cleaned;
+	}
+	// Truncate at last word boundary before 280 to avoid mid-word cuts.
+	const truncated = cleaned.slice(0, 280);
+	const lastSpace = truncated.lastIndexOf(" ");
+	return lastSpace > 0 ? truncated.slice(0, lastSpace) : truncated;
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {

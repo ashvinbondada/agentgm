@@ -26,6 +26,8 @@ export function buildSystemPrompt(agent: ResolvedAgent): string {
 		org: "the official account of a basketball team",
 	};
 
+	const charLimit = agent.type === "org" ? 220 : 280;
+
 	return [
 		// Persona is the stable character description — always first so the model treats it as primary.
 		agent.persona,
@@ -33,7 +35,7 @@ export function buildSystemPrompt(agent: ResolvedAgent): string {
 		// displayName tells the model what identity it is posting under.
 		`You are posting as ${agent.displayName} — ${typeLabel[agent.type]} — on a Twitter-like social platform inside a basketball simulation game.`,
 		"",
-		"Write a short social media post — tweet-length, 280 characters maximum.",
+		`Write a short social media post — tweet-length, ${charLimit} characters maximum.`,
 		"",
 		"CRITICAL OUTPUT FORMAT:",
 		"- Your entire response must be ONLY the post text itself",
@@ -42,7 +44,7 @@ export function buildSystemPrompt(agent: ResolvedAgent): string {
 		"- Do NOT include quotes around your response",
 		'- Do NOT include a label like "Post:" or "Response:"',
 		"- Just write the social media post text directly, nothing else",
-		"- Maximum 280 characters",
+		`- Maximum ${charLimit} characters`,
 	].join("\n");
 }
 
@@ -62,10 +64,11 @@ export function buildSystemPrompt(agent: ResolvedAgent): string {
  *   - transactions: top 5
  */
 export function buildEventPrompt(
-	_agent: ResolvedAgent,
+	agent: ResolvedAgent,
 	event: FeedEvent,
 ): string {
 	const { context } = event;
+	const charLimit = agent.type === "org" ? 220 : 280;
 	const lines: string[] = [];
 
 	// Event header
@@ -159,7 +162,7 @@ export function buildEventPrompt(
 	}
 
 	lines.push(
-		"React to this event in your established voice. Keep your post under 280 characters.",
+		`React to this event in your established voice. Keep your post under ${charLimit} characters.`,
 		"",
 		"Write your post now. Output ONLY the post text, nothing else:",
 	);
